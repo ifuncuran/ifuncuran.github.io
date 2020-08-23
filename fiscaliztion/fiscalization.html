@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+
+
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>ASSIST: fiscalize v.1.0</title>
+	<style type="text/css">
+
+		body {
+		  margin: 0;
+		  padding: 0;
+		  background-color: #a2a2a2;
+		  display: flex;
+		  justify-content: center;
+		  height: 100vh;
+		  font-family: 'Roboto', sans-serif;
+		  font-size: 10pt;
+		}
+
+		input, button, textarea, select {
+		  border: 2px solid rgba(0, 0, 0, 0.6);
+		  background-image: none;
+		  background-color: #dadad3;
+		  box-shadow: none;
+		  padding: 5px;
+		}
+
+		#DeleteItem, #addItem{
+			margin-top: 5px;
+			margin-left: 10px;
+			width: 45%;
+		}
+		#DeleteItem{
+			float: left;
+		}
+
+		#addItem{
+			float: right;
+		}
+
+		table {
+			border-collapse: collapse; 
+			border: 3px solid grey; 
+			background-color: #ffffff;
+			width: 600px;
+			margin-top: 10px;
+			margin-left: 10px;
+		}
+
+		td {
+			border: 1px solid grey;
+			padding-left: 5px;
+			padding-top: 5px;
+			height: 30px;
+		}
+
+		input, select{
+			float: right;
+			margin-bottom: 5px;
+		}
+
+		input {
+			width: 300px;
+		}
+
+		select {
+			width: 314px;
+		}
+
+		#SendToKKT{
+			float: left;
+			width:585px;
+			height:50px;
+			}
+
+		.button{
+			background-color: #bbbbbb;
+			font-size:11pt;
+		}
+
+		.button:hover{
+			background-color: #aaaaaa;
+		}
+
+		.button:active {
+		  background-color: #888888;
+		}
+
+	</style>
+
+
+</head>	
+
+
+<body>
+
+   <script>
+		
+		var ChequeitemCount = 1;
+
+		var FPModeInChequeitems = true; 
+		var TaxInChequeitems = true;
+
+		function URLChange(){
+		   document.usd.action = document.usd.url.value;
+		}
+
+		function CheckAndSend(){ //проверяем
+
+			var Chequeitems = {
+				items: []
+			};
+
+			if (TaxInChequeitems === true && FPModeInChequeitems === true){ //FPMode и Tax переданы в позициях чека
+
+				for (var i = 0; i < ChequeitemCount; i++){ //идём по всем позициям чека
+				// забираем данные позиции из формы
+					var chequeItem_id = document.getElementsByClassName("chequeItem_id")[i].value;
+					var chequeItem_product = document.getElementsByClassName("chequeItem_product")[i].value;
+					var chequeItem_name = document.getElementsByClassName("chequeItem_name")[i].value;
+					var chequeItem_price = document.getElementsByClassName("chequeItem_price")[i].value;
+					var chequeItem_quantity = document.getElementsByClassName("chequeItem_quantity")[i].value;
+					var chequeItem_amount = document.getElementsByClassName("chequeItem_amount")[i].value;
+					var chequeItem_subjtype = document.getElementsByClassName("chequeItem_subjtype")[i].value;
+					var chequeItem_FPMode = document.getElementsByClassName("chequeItem_FPMode")[i].value;
+					var chequeItem_Tax = document.getElementsByClassName("chequeItem_Tax")[i].value;
+
+					//вносим данные позиции в объект после проверки значения subjtype
+					if (chequeItem_subjtype != ""){
+
+						var Chequeitem = {
+							id: chequeItem_id,
+							product: chequeItem_product,
+							name: chequeItem_name,
+							price: chequeItem_price,
+							quantity: chequeItem_quantity,
+							amount: chequeItem_amount,
+							subjtype: chequeItem_subjtype,
+							FPMode: chequeItem_FPMode,
+							Tax: chequeItem_Tax		
+						};
+					}
+					else {
+						var Chequeitem = {
+							id: chequeItem_id,
+							product: chequeItem_product,
+							name: chequeItem_name,
+							price: chequeItem_price,
+							quantity: chequeItem_quantity,
+							amount: chequeItem_amount,
+							FPMode: chequeItem_FPMode,
+							Tax: chequeItem_Tax		
+						};
+					}
+					//вносим позицию в структуру чека
+					Chequeitems.items.push(Chequeitem);
+				}
+			}
+
+
+			if (TaxInChequeitems === true && FPModeInChequeitems === false){ // без FPMode в позициях чека
+
+				for (var i = 0; i < ChequeitemCount; i++){ //идём по всем позициям чека
+				// забираем данные позиции из формы
+					var chequeItem_id = document.getElementsByClassName("chequeItem_id")[i].value;
+					var chequeItem_product = document.getElementsByClassName("chequeItem_product")[i].value;
+					var chequeItem_name = document.getElementsByClassName("chequeItem_name")[i].value;
+					var chequeItem_price = document.getElementsByClassName("chequeItem_price")[i].value;
+					var chequeItem_quantity = document.getElementsByClassName("chequeItem_quantity")[i].value;
+					var chequeItem_amount = document.getElementsByClassName("chequeItem_amount")[i].value;
+					var chequeItem_subjtype = document.getElementsByClassName("chequeItem_subjtype")[i].value;
+					var chequeItem_Tax = document.getElementsByClassName("chequeItem_Tax")[i].value;
+
+					//вносим данные позиции в объект после проверки значения subjtype
+					if (chequeItem_subjtype != ""){
+						var Chequeitem = {
+							id: chequeItem_id,
+							product: chequeItem_product,
+							name: chequeItem_name,
+							price: chequeItem_price,
+							quantity: chequeItem_quantity,
+							amount: chequeItem_amount,
+							subjtype: chequeItem_subjtype,
+							Tax: chequeItem_Tax		
+						};
+					}
+					else {
+						var Chequeitem = {
+							id: chequeItem_id,
+							product: chequeItem_product,
+							name: chequeItem_name,
+							price: chequeItem_price,
+							quantity: chequeItem_quantity,
+							amount: chequeItem_amount,
+							Tax: chequeItem_Tax		
+						};
+					}
+					//вносим позицию в структуру чека
+					Chequeitems.items.push(Chequeitem);
+				};
+			}
+
+			if (TaxInChequeitems === false && FPModeInChequeitems === true){ // без Tax в позициях чека
+
+				for (var i = 0; i < ChequeitemCount; i++){ //идём по всем позициям чека
+				// забираем данные позиции из формы
+					var chequeItem_id = document.getElementsByClassName("chequeItem_id")[i].value;
+					var chequeItem_product = document.getElementsByClassName("chequeItem_product")[i].value;
+					var chequeItem_name = document.getElementsByClassName("chequeItem_name")[i].value;
+					var chequeItem_price = document.getElementsByClassName("chequeItem_price")[i].value;
+					var chequeItem_quantity = document.getElementsByClassName("chequeItem_quantity")[i].value;
+					var chequeItem_amount = document.getElementsByClassName("chequeItem_amount")[i].value;
+					var chequeItem_subjtype = document.getElementsByClassName("chequeItem_subjtype")[i].value;
+					var chequeItem_FPMode = document.getElementsByClassName("chequeItem_FPMode")[i].value;
+
+					//вносим данные позиции в объект после проверки значения subjtype
+					if (chequeItem_subjtype != ""){
+						var Chequeitem = {
+							id: chequeItem_id,
+							product: chequeItem_product,
+							name: chequeItem_name,
+							price: chequeItem_price,
+							quantity: chequeItem_quantity,
+							amount: chequeItem_amount,
+							subjtype: chequeItem_subjtype,
+							FPMode: chequeItem_FPMode	
+						};
+					}
+					else{
+						var Chequeitem = {
+							id: chequeItem_id,
+							product: chequeItem_product,
+							name: chequeItem_name,
+							price: chequeItem_price,
+							quantity: chequeItem_quantity,
+							amount: chequeItem_amount,
+							FPMode: chequeItem_FPMode	
+						};
+					}
+					//вносим позицию в структуру чека
+					Chequeitems.items.push(Chequeitem);
+				};
+			}
+
+			if (TaxInChequeitems === false && FPModeInChequeitems === false){ // без Tax и без FPMode в позициях чека
+
+				for (var i = 0; i < ChequeitemCount; i++){ //идём по всем позициям чека
+				// забираем данные позиции из формы
+					var chequeItem_id = document.getElementsByClassName("chequeItem_id")[i].value;
+					var chequeItem_product = document.getElementsByClassName("chequeItem_product")[i].value;
+					var chequeItem_name = document.getElementsByClassName("chequeItem_name")[i].value;
+					var chequeItem_price = document.getElementsByClassName("chequeItem_price")[i].value;
+					var chequeItem_quantity = document.getElementsByClassName("chequeItem_quantity")[i].value;
+					var chequeItem_amount = document.getElementsByClassName("chequeItem_amount")[i].value;
+					var chequeItem_subjtype = document.getElementsByClassName("chequeItem_subjtype")[i].value;
+
+					//вносим данные позиции в объект после проверки значения subjtype
+					if (chequeItem_subjtype != ""){
+						var Chequeitem = {
+							id: chequeItem_id,
+							product: chequeItem_product,
+							name: chequeItem_name,
+							price: chequeItem_price,
+							quantity: chequeItem_quantity,
+							amount: chequeItem_amount,
+							subjtype: chequeItem_subjtype	
+						};
+					}
+					else {
+						var Chequeitem = {
+							id: chequeItem_id,
+							product: chequeItem_product,
+							name: chequeItem_name,
+							price: chequeItem_price,
+							quantity: chequeItem_quantity,
+							amount: chequeItem_amount	
+						};
+					}
+					//вносим позицию в структуру чека
+					Chequeitems.items.push(Chequeitem);
+				};
+			}
+
+			//jsonфицируем структуру чека
+			var str = JSON.stringify(Chequeitems);
+			//alert(ChequeitemCount + ' ' + str);
+			alert('Если на следующей странице Вы увидите <result firstcode="0" secondcode="0"..., значит чек был успешно отправлен на ККТ. Для проверки статуса отправленного чека воспользуйтесь Личным кабинетом Ассист')
+			//заменяем данные позиций чека в форме отправки
+			document.getElementById("Chequeitems").value = str;
+		}
+		function MoreCheque(){//добавляем еще таблицу html для ввода позиции чека
+			ChequeitemCount++; //увеличиваем счетчик кол-ва позиций
+			var chequeitemTable = document.getElementsByClassName("chequeitemTable")[0]; //берем таблицу с позицией чека
+			var chequeitemTableNew = chequeitemTable.cloneNode(true); // копируем её в chequeitemTableNew
+			chequeitemTableNew.getElementsByTagName('input')[0].value = ChequeitemCount; // id позиции чека определяем по порядковому номеру позиции чека
+			for (var i = 1; i < chequeitemTableNew.getElementsByTagName('input').length; i++){ // обнуляем остальные значения
+				chequeitemTableNew.getElementsByTagName('input')[i].value = '';
+			}
+			chequeitemsForm.insertBefore(chequeitemTableNew, DeleteItem); //вставляем в конец перед кнопкой "Удалить последнюю позицию"
+		}
+		function DeleteCheque(){//удаляем последнюю таблицу html
+			if (ChequeitemCount === 1){
+				alert('Нельзя удалить одну позицию')
+			}
+			else {
+				ChequeitemCount--;
+				var chequeitemTable = document.getElementsByClassName("chequeitemTable")[document.getElementsByClassName("chequeitemTable").length - 1]; //берем последнюю таблицу с позицией чека
+				chequeitemsForm.removeChild(chequeitemTable); //удаляем её
+			}
+		}
+
+		function CheckFPMode(FPMode_value){
+			if (FPMode_value == 0){ //если указывать в позиции чека - проверить наличие в позициях чека класса chequeItem_FPMode, если нет - добавить
+
+				var chequeitemTable = document.getElementsByClassName("chequeitemTable")[0]; //берем таблицу с позицией чека
+				FPModeInChequeitems = true;
+				if (!chequeitemTable.getElementsByClassName("chequeItem_FPMode").length){ //если класса chequeItem_FPMode - нет
+
+					for (var i = 0; i < chequeitemsForm.getElementsByClassName('chequeitemTable').length; i++){ //идем по всем позициям
+						var tr = document.createElement('tr');
+						tr.innerHTML = '<TD>Способ расчёта (FPMode)<select name="FPMode" class="chequeItem_FPMode"><option title="Полная предварительная оплата до момента передачи предмета расчета" value="1">Предоплата 100% (1)</option><option title="Частичная предварительная оплата до момента передачи предмета расчета" value="2">Предоплата (2)</option><option title="Аванс" value="3">Аванс (3)</option><option title="Полная оплата, в том числе с учетом аванса (предварительной оплаты) в момент передачи предмета расчета" value="4">Полный расчёт (4)</option><option title="Частичная оплата предмета расчета в момент его передачи с последующей оплатой в кредит" value="5">Частичный расчёт и кредит (5)</option><option title="Передача предмета расчета без его оплаты в момент его передачи с последующей оплатой в кредит" value="6">Передача в кредит (6)</option><option title="Оплата предмета расчета после его передачи с оплатой в кредит (оплата кредита)" value="7">Оплата кредита (7)</option></select></TD>'; //создаем элемент
+						chequeitemsForm.getElementsByClassName('chequeitemTable')[i].appendChild(tr); // отображаем его на странице
+					}
+				}
+			}
+			else { //если указывается в параметрах - проверить отсутствие в позициях чека класса chequeItem_FPMode, если есть - удалить
+				var chequeitemTable = document.getElementsByClassName("chequeitemTable")[0]; //берем таблицу с позицией чека
+				FPModeInChequeitems = false;
+				if (chequeitemTable.getElementsByClassName("chequeItem_FPMode").length){ //если класс chequeItem_FPMode - есть
+					for (var i = 0; i < chequeitemsForm.getElementsByClassName('chequeitemTable').length; i++){ // идём по всем позициям
+						var toDelete = chequeitemsForm.getElementsByClassName('chequeitemTable')[i].getElementsByClassName('chequeItem_FPMode')[0];
+						toDelete.parentNode.parentNode.remove(); // удаляем его из chequeitem-ов
+					}
+				}
+			}
+		}
+
+		function CheckTax(Tax_value){
+			if (Tax_value == 0){ //если указывать в позиции чека - проверить наличие в позициях чека класса chequeItem_FPMode, если нет - добавить
+
+				var chequeitemTable = document.getElementsByClassName("chequeitemTable")[0]; //берем таблицу с позицией чека
+				TaxInChequeitems = true;
+				if (!chequeitemTable.getElementsByClassName("chequeItem_Tax").length){ //если класса chequeItem_FPMode - нет
+
+					for (var i = 0; i < chequeitemsForm.getElementsByClassName('chequeitemTable').length; i++){ //идем по всем позициям
+						var tr = document.createElement('tr');
+						tr.innerHTML = '<TD>Ставка налога (Tax)<select name="Tax" class="chequeItem_Tax"><option value="novat">Без НДС (novat)</option><option value="vat0">Ставка НДС 0% (vat0)</option><option value="vat10">Ставка НДС 10% (vat10)</option><option value="vat20">Ставка НДС 20% (vat20)</option><option value="vat110">НДС, рассчитанный по ставке 10/110 (vat110)</option><option value="vat120">НДС, рассчитанный по ставке 20/120 (vat120)</option></select></TD>'; //создаем элемент
+						chequeitemsForm.getElementsByClassName('chequeitemTable')[i].appendChild(tr); // отображаем его на странице
+					}
+				}
+			}
+			else { //если указывается в параметрах - проверить отсутствие в позициях чека класса chequeItem_FPMode, если есть - удалить
+				var chequeitemTable = document.getElementsByClassName("chequeitemTable")[0]; //берем таблицу с позицией чека
+				TaxInChequeitems = false;
+				if (chequeitemTable.getElementsByClassName("chequeItem_Tax").length){ //если класс chequeItem_FPMode - есть
+					for (var i = 0; i < chequeitemsForm.getElementsByClassName('chequeitemTable').length; i++){ // идём по всем позициям
+						var toDelete = chequeitemsForm.getElementsByClassName('chequeitemTable')[i].getElementsByClassName('chequeItem_Tax')[0];
+						toDelete.parentNode.parentNode.remove(); // удаляем его из html
+					}
+				}
+			}
+		}
+	</script>
+
+<FORM id="Parameters" ACTION="https://payments.paysecure.ru/fiscal/fiscalize.cfm" METHOD="POST" action = "" onsubmit="URLChange();">
+<TABLE>
+<TR title="Идентификатор предприятия в системе АПК Ассист"><TD>Merchant_ID<INPUT TYPE="TEXT" NAME="Merchant_ID" VALUE=""></TD></TR>
+<TR title="Логин пользователя сервиса от предприятия"><TD>Login<INPUT TYPE="TEXT" NAME="Login" VALUE=""></TD></TR>
+<TR title="Пароль пользователя сервиса от предприятия"><TD>Password (Пароль)<INPUT TYPE="PASSWORD" NAME="Password" VALUE=""></TD></TR>
+<TR><TD>Вид оплаты (Paymenttype)
+	<select name="Paymenttype">
+		<option title="Отображение в фискальном чеке &quotЭЛЕКТРОННО&quot" value="1">Банковская карта (1)</option>
+		<option title="Отображение в фискальном чеке &quotЭЛЕКТРОННО&quot" value="2">Кошельки (2)</option>
+		<option title="Отображение в фискальном чеке &quotЭЛЕКТРОННО&quot" value="3">Безналичный расчет (3)</option>
+		<option title="Отображение в фискальном чеке &quotНАЛИЧНЫМИ&quot" value="10">Наличный расчет (10)</option>
+		<option title="Отображение в фискальном чеке &quotАВАНС&quot" value="21">Предоплата (зачет аванса) (21)</option>
+		<option title="Отображение в фискальном чеке &quotВ КРЕДИТ&quot" value="22">Постоплата (в кредит) (22)</option>
+		<option title="Отображение в фискальном чеке &quotОБМЕН&quot" value="23">Оплата встречным представлением (23)</option>
+	</select>
+</TD></TR>
+<TR title="Идентификатор операции в системе предприятия"><TD>Идентификатор операции (Payment_ID)<INPUT TYPE="TEXT" NAME="Payment_ID" VALUE=""></TD></TR>
+<INPUT TYPE="HIDDEN" NAME="Format" VALUE="3">
+<TR title="E-mail адрес для отправки фискального чека"><TD>Email<INPUT TYPE="TEXT" NAME="Email" VALUE=""></TD></TR>
+<TR><TD>Тип операции (Type) 
+	<select name="Type">
+		<option value="sell" selected>sell - операция типа ПРИХОД</option>
+		<option value="sell_refund">sell_refund - операция типа ВОЗВРАТ ПРИХОДА</option>
+	</select>
+</TD></TR>
+<TR><TD>Сумма операции (Amount)<INPUT TYPE="TEXT" NAME="Amount" VALUE=""></TD></TR>
+<INPUT TYPE="HIDDEN" id="Chequeitems" NAME="Chequeitems" VALUE=''>
+<INPUT TYPE="HIDDEN" NAME="Language" VALUE="RU">
+
+<TR><TD>Способ расчёта (FPMode) 
+	<select name="FPMode" onchange="CheckFPMode(this.value)">
+		<option value="0" selected>Указать в позициях чека</option>
+		<option title="Полная предварительная оплата до момента передачи предмета расчета" value="1">Предоплата 100% (1)</option>
+		<option title="Частичная предварительная оплата до момента передачи предмета расчета" value="2">Предоплата (2)</option>
+		<option title="Аванс" value="3">Аванс (3)</option>
+		<option title="Полная оплата, в том числе с учетом аванса (предварительной оплаты) в момент передачи предмета расчета" value="4">Полный расчёт (4)</option>
+		<option title="Частичная оплата предмета расчета в момент его передачи с последующей оплатой в кредит" value="5">Частичный расчёт и кредит (5)</option>
+		<option title="Передача предмета расчета без его оплаты в момент его передачи с последующей оплатой в кредит" value="6">Передача в кредит (6)</option>
+		<option title="Оплата предмета расчета после его передачи с оплатой в кредит (оплата кредита)" value="7">Оплата кредита (7)</option>
+	</select>
+</TD></TR>
+
+<TR><TD>Ставка налога (Tax)
+	<select name="Tax" onchange="CheckTax(this.value)">
+		<option value="0" selected>Указать в позициях чека</option>
+		<option value="novat">Без НДС (novat)</option>
+		<option value="vat0">Ставка НДС 0% (vat0)</option>
+		<option value="vat10">Ставка НДС 10% (vat10)</option>
+		<option value="vat20">Ставка НДС 20% (vat20)</option>
+		<option value="vat110">НДС, рассчитанный по ставке 10/110 (vat110)</option>
+		<option value="vat120">НДС, рассчитанный по ставке 20/120 (vat120)</option>
+	</select>
+</TD></TR>
+<TR><TD><INPUT class="button" id="SendToKKT" TYPE="submit" NAME="Submit" VALUE="Отправить чек на ККТ" onclick="CheckAndSend()"></TD></TR>
+</TABLE>
+</FORM>
+	
+
+<FORM id ="chequeitemsForm">
+<TABLE class="chequeitemTable">
+<TR title="Позиция в чеке (уникальное число для чека)"><TD>Позиция в чеке (id)<INPUT TYPE="TEXT" class="chequeItem_id" VALUE="1"></TD></TR>
+<TR title="Код товара по справочнику товаров магазина"><TD>Код товара (product)<INPUT TYPE="TEXT" class="chequeItem_product" VALUE=""></TD></TR>
+<TR title="Должен быть определен один из параметров - код товара (product) или его наименование (name), либо оба параметра
+должны быть переданы (при формировании чека они объединяются в одну строку)."><TD>Наименование товара (name)<INPUT TYPE="TEXT" class="chequeItem_name" VALUE=""></TD></TR>
+<TR><TD>Стоимость единицы товара (price)<INPUT TYPE="TEXT" class="chequeItem_price" VALUE=""></TD></TR>
+<TR><TD>Количество единиц товара (quantity)<INPUT TYPE="TEXT" class="chequeItem_quantity" VALUE=""></TD></TR>
+<TR><TD>Стоимость позиции price*quantity (amount)<INPUT TYPE="TEXT" class="chequeItem_amount" VALUE=""></TD></TR>
+<TR><TD>Признак предмета расчета (subjtype) 
+	<select name="subjtype" class="chequeItem_subjtype">
+		<option value="" selected>Не передавать параметр</option>
+		<option title="О реализуемом товаре, за исключением подакцизного товара (наименование и иные сведения, описывающие товар)" value="1">ТОВАР (1)</option>
+		<option title="О реализуемом подакцизном товаре (наименование и иные сведения, описывающие товар)" value="2">ПОДАКЦИЗНЫЙ ТОВАР (2)</option>
+		<option title="О выполняемой работе (наименование и иные сведения, описывающие работу)" value="3">РАБОТА (3)</option>
+		<option title="Об оказываемой услуге (наименование и иные сведения, описывающие услугу)" value="4">УСЛУГА (4)</option>
+		<option title="О приеме ставок при осуществлении деятельности по проведению азартных игр" value="5">СТАВКА АЗАРТНОЙ ИГРЫ (5)</option>
+		<option title="О выплате денежных средств в виде выигрыша при осуществлении деятельности по проведению азартных игр" value="6">ВЫИГРЫШ АЗАРТНОЙ ИГРЫ (6)</option>
+		<option title="О приеме денежных средств при реализации лотерейных билетов, электронных лотерейных билетов, приеме лотерейных ставок при осуществлении деятельности по проведению лотерей" value="7">ЛОТЕРЕЙНЫЙ БИЛЕТ (7)</option>
+		<option title="О выплате денежных средств в виде выигрыша при осуществлении деятельности по проведению лотерей" value="8">ВЫИГРЫШ ЛОТЕРЕИ (8)</option>
+		<option title="О предоставлении прав на использование результатов интеллектуальной деятельности или средств индивидуализации" value="9">ПРЕДОСТАВЛЕНИЕ РИД (9)</option>
+		<option title="Об авансе, задатке, предоплате, кредите, взносе в счет оплаты, пени, штрафе, вознаграждении, бонусе и ином аналогичном предмете расчета" value="10">ВЫПЛАТА (10)</option>
+		<option title="О вознаграждении пользователя, являющегося платежным агентом (субагентом), банковским платежным агентом (субагентом), комиссионером, поверенным или иным агентом" value="11">АГЕНТСКОЕ ВОЗНАГРАЖДЕНИЕ (11)</option>
+		<option title="О предмете расчета, состоящем из предметов, каждому из которых может быть присвоено значение от &quot1&quot до &quot11&quot" value="12">СОСТАВНОЙ ПРЕДМЕТ РАСЧЕТА (12)</option>
+		<option title="О предмете расчета, не относящемуся к предметам расчета, которым может быть присвоено значение от &quot1&quot до &quot12&quot и от &quot14&quot до &quot18&quot" value="13">ИНОЙ ПРЕДМЕТ РАСЧЕТА (13)</option>
+		<option title="О передаче имущественных прав" value="14">ИМУЩЕСТВЕННОЕ ПРАВО (14)</option>
+		<option title="О внереализационном доходе" value="15">ВНЕРЕАЛИЗАЦИОННЫЙ ДОХОД (15)</option>
+		<option title="О суммах расходов, уменьшающих сумму налога (авансовых платежей) в соответствии с пунктом 3.1 статьи 346.21 Налогового кодекса Российской Федерации" value="16">СТРАХОВЫЕ ВЗНОСЫ (16)</option>
+		<option title="О суммах уплаченного торгового сбора" value="17">ТОРГОВЫЙ СБОР (17)</option>
+		<option title="О курортном сборе" value="18">КУРОРТНЫЙ СБОР (18)</option>
+		<option title="О залоге" value="19">ЗАЛОГ (19)</option>
+	</select>
+</TD></TR>
+<TR><TD>Способ расчёта (FPMode)
+	<select name="FPMode" class="chequeItem_FPMode">
+		<option title="Полная предварительная оплата до момента передачи предмета расчета" value="1">Предоплата 100% (1)</option>
+		<option title="Частичная предварительная оплата до момента передачи предмета расчета" value="2">Предоплата (2)</option>
+		<option title="Аванс" value="3">Аванс (3)</option>
+		<option title="Полная оплата, в том числе с учетом аванса (предварительной оплаты) в момент передачи предмета расчета" value="4">Полный расчёт (4)</option>
+		<option title="Частичная оплата предмета расчета в момент его передачи с последующей оплатой в кредит" value="5">Частичный расчёт и кредит (5)</option>
+		<option title="Передача предмета расчета без его оплаты в момент его передачи с последующей оплатой в кредит" value="6">Передача в кредит (6)</option>
+		<option title="Оплата предмета расчета после его передачи с оплатой в кредит (оплата кредита)" value="7">Оплата кредита (7)</option>
+	</select>
+</TD></TR>
+<TR><TD>Ставка налога (Tax) 
+	<select name="Tax" class="chequeItem_Tax">
+		<option value="novat">Без НДС (novat)</option>
+		<option value="vat0">Ставка НДС 0% (vat0)</option>
+		<option value="vat10">Ставка НДС 10% (vat10)</option>
+		<option value="vat20">Ставка НДС 20% (vat20)</option>
+		<option value="vat110">НДС, рассчитанный по ставке 10/110 (vat110)</option>
+		<option value="vat120">НДС, рассчитанный по ставке 20/120 (vat120)</option>
+	</select>
+</TD></TR>
+</TABLE>
+<INPUT class="button" TYPE="button" id="DeleteItem" NAME="button" VALUE="Удалить последнюю позицию" onclick="DeleteCheque()">
+<INPUT class="button" TYPE="button" id="addItem" NAME="button" VALUE="Добавить еще позицию" onclick="MoreCheque()">
+</FORM>
+
+
+</body>
+</html>
+
+
